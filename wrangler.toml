@@ -4,7 +4,7 @@ compatibility_date = "2026-2-7"
 main = "src/chat.mjs"
 
 [vars]
-ADMIN_API_KEY = "019c3883-e31d-740e-b99c-d662394a0075"
+ADMIN_SECRET_KEY = "019c3883-e31d-740e-b99c-d662394a0075"
 ALL_ROOM_NAMES = "general,my-private-room,public-chat"
 
 [durable_objects]
