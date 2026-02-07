@@ -1,4 +1,4 @@
-name = "max_chat_room"
+name = "max-chat-room"
 compatibility_date = "2026-2-7"
 
 main = "src/chat.mjs"
