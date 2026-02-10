@@ -5,7 +5,7 @@
   这只是一个UI界面文件，不包含核心逻辑。
   本演示的核心功能在服务端代码 chat.mjs 中实现。
 
-  注意：此文件由系统工程师编写，非专业前端开发人员，代码风格可能不符合前端最佳实践。
+  优化版本：macOS风格 + 莫奈配色 + 毛玻璃效果
 -->
 
 <html>
@@ -18,85 +18,474 @@
 * {
   box-sizing: border-box;
 }
+
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  overflow: hidden;
+  transition: background 0.5s ease;
+}
+
+/* 深色模式 */
+body.dark-mode {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 25%, #0f3460 50%, #1e3a5f 75%, #1a1a40 100%);
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* 莫奈风格的水彩纹理叠加 */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(255, 182, 193, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 40% 20%, rgba(173, 216, 230, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+  animation: watercolor 20s ease-in-out infinite;
+}
+
+@keyframes watercolor {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 0.9; }
+}
+
+/* 深色模式水彩纹理 */
+body.dark-mode::before {
+  background-image: 
+    radial-gradient(circle at 20% 50%, rgba(100, 100, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(138, 43, 226, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 40% 20%, rgba(30, 144, 255, 0.1) 0%, transparent 50%);
 }
 
 #chatlog {
   position: fixed;
-  top: 0;
-  bottom: 32px;
-  left: 0;
-  right: 200px;
+  top: 90px;
+  bottom: 100px;
+  left: 20px;
+  right: 220px;
   overflow-y: auto;
-  padding: 8px;
+  padding: 20px;
   overflow-wrap: break-word;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(30px) saturate(150%);
+  -webkit-backdrop-filter: blur(30px) saturate(150%);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    0 2px 8px rgba(0, 0, 0, 0.05),
+    inset 0 1px 1px rgba(255, 255, 255, 0.5);
+  transition: all 0.3s ease;
 }
+
+body.dark-mode #chatlog {
+  background: rgba(30, 30, 50, 0.3);
+  border: 1px solid rgba(100, 100, 200, 0.3);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    inset 0 1px 1px rgba(100, 100, 200, 0.2);
+}
+
+#chatlog::-webkit-scrollbar {
+  width: 8px;
+}
+
+#chatlog::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+#chatlog::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+#chatlog::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* 消息气泡样式 */
+#chatlog p {
+  margin: 8px 0;
+  padding: 12px 18px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 18px;
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    inset 0 1px 1px rgba(255, 255, 255, 0.8);
+  display: block;
+  max-width: 85%;
+  animation: messageSlideIn 0.3s ease-out;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  transition: all 0.2s ease;
+  word-wrap: break-word;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+body.dark-mode #chatlog p {
+  background: rgba(50, 50, 80, 0.6);
+  border: 1px solid rgba(100, 100, 200, 0.4);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    inset 0 1px 1px rgba(100, 100, 200, 0.3);
+  color: rgba(255, 255, 255, 0.95);
+}
+
+#chatlog p:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.12),
+    inset 0 1px 1px rgba(255, 255, 255, 0.8);
+}
+
+body.dark-mode #chatlog p:hover {
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.4),
+    inset 0 1px 1px rgba(100, 100, 200, 0.3);
+}
+
+@keyframes messageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 系统消息样式 */
+#chatlog p:not(:has(.username)) {
+  background: rgba(100, 100, 100, 0.2);
+  color: rgba(255, 255, 255, 0.95);
+  font-style: italic;
+  text-align: center;
+  max-width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+body.dark-mode #chatlog p:not(:has(.username)) {
+  background: rgba(50, 50, 100, 0.3);
+  color: rgba(200, 200, 255, 0.95);
+  border: 1px solid rgba(100, 100, 200, 0.3);
+}
+
 #chatlog span.username {
-  font-weight: bold;
+  font-weight: 600;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-right: 4px;
 }
+
 #spacer {
   height: calc(100vh - 32px - 5em);
 }
 
 #roster {
-  font-weight: bold;
-  padding: 8px;
-}
-
-p {
-  margin-top: 0;
-  margin-bottom: 8px;
-}
-p:last-of-type {
-  margin: 0;
-}
-
-#roster {
   position: fixed;
-  right: 0;
-  top: 0;
-  bottom: 32px;
-  width: 200px;
-  border-left: none;
+  right: 20px;
+  top: 90px;
+  bottom: 100px;
+  width: 180px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(30px) saturate(150%);
+  -webkit-backdrop-filter: blur(30px) saturate(150%);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    0 2px 8px rgba(0, 0, 0, 0.05),
+    inset 0 1px 1px rgba(255, 255, 255, 0.5);
+  overflow-y: auto;
+  transition: all 0.3s ease;
 }
 
-::-webkit-scrollbar {
+body.dark-mode #roster {
+  background: rgba(30, 30, 50, 0.3);
+  border: 1px solid rgba(100, 100, 200, 0.3);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    inset 0 1px 1px rgba(100, 100, 200, 0.2);
+}
+
+#roster p {
+  margin: 8px 0;
+  padding: 8px 12px;
+  background: rgba(102, 126, 234, 0.5);
+  border-radius: 12px;
+  font-weight: 500;
+  color: #ffffff;
+  font-size: 14px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.3s ease-out;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+body.dark-mode #roster p {
+  background: rgba(80, 80, 150, 0.5);
+  color: rgba(220, 220, 255, 0.95);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+#roster::-webkit-scrollbar {
+  width: 6px;
+}
+
+#roster::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+#roster::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+/* 移动端用户列表按钮 */
+#roster-toggle {
   display: none;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 25px;
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.1),
+    inset 0 1px 2px rgba(255, 255, 255, 0.5);
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 101;
+  transition: all 0.3s ease;
+  border: none;
+  outline: none;
+  align-items: center;
+  justify-content: center;
+}
+
+body.dark-mode #roster-toggle {
+  background: rgba(50, 50, 80, 0.3);
+  border: 1px solid rgba(100, 100, 200, 0.4);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    inset 0 1px 2px rgba(100, 100, 200, 0.3);
+}
+
+#roster-toggle:hover {
+  transform: scale(1.05);
+}
+
+#roster-toggle:active {
+  transform: scale(0.95);
+}
+
+#roster-toggle .user-count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 12px;
+  padding: 2px 6px;
+  font-size: 12px;
+  font-weight: bold;
+  min-width: 20px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* 移动端遮罩层 */
+#roster-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 99;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+#roster-overlay.active {
+  opacity: 1;
 }
 
 @media(max-width:600px) {
-  #roster { display: none; }
-  #chatlog { right: 0; }
+  #roster-toggle {
+    display: flex !important;
+  }
+  
+  #chatroom.active #roster-toggle {
+    animation: fadeInSlide 0.5s ease-out 0.2s backwards;
+  }
+  
+  #roster {
+    position: fixed;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 280px;
+    border-radius: 0;
+    border-right: none;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    z-index: 100;
+    padding-top: 80px;
+  }
+  
+  #roster.active {
+    transform: translateX(0);
+  }
+  
+  #roster-overlay.active {
+    display: block;
+  }
+  
+  #chatlog { right: 20px; }
+}
+
+/* 浮空输入框容器 */
+#chat-input-container {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  right: 220px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+@media(max-width:600px) {
+  #chat-input-container { right: 20px; }
 }
 
 #chat-input {
-  position: fixed;
-  width: 100%;
-  height: 32px;
-  bottom: 0;
-  left: 0;
+  flex: 1;
+  height: 60px;
   border: none;
-  border-top: none;
-  padding-left: 32px;
+  border-radius: 30px;
+  padding: 0 60px 0 24px;
+  font-size: 16px;
   outline: none;
-}
-#chatroom::before {
-  z-index: 1;
-  display: block;
-  content: ">";
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 32px;
-  height: 32px;
-  line-height: 32px;
-  text-align: center;
-  font-weight: bold;
-  color: #888;
-  -webkit-text-stroke-width: 2px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.15),
+    0 2px 8px rgba(0, 0, 0, 0.1),
+    inset 0 1px 2px rgba(255, 255, 255, 0.8);
+  color: #333;
+  transition: all 0.3s ease;
+  font-family: inherit;
 }
 
+body.dark-mode #chat-input {
+  background: rgba(40, 40, 70, 0.7);
+  border: 1px solid rgba(100, 100, 200, 0.4);
+  color: rgba(255, 255, 255, 0.95);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    inset 0 1px 2px rgba(100, 100, 200, 0.3);
+}
+
+#chat-input:focus {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.2),
+    0 4px 12px rgba(0, 0, 0, 0.15),
+    inset 0 1px 2px rgba(255, 255, 255, 0.9);
+  transform: translateY(-2px);
+}
+
+body.dark-mode #chat-input:focus {
+  background: rgba(50, 50, 90, 0.8);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.4),
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    inset 0 1px 2px rgba(100, 100, 200, 0.4);
+}
+
+#chat-input::placeholder {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode #chat-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* 发送按钮 */
+#send-button {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  transition: all 0.2s ease;
+  font-weight: 300;
+  line-height: 1;
+}
+
+#send-button:hover {
+  transform: translateY(-50%) scale(1.05);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+}
+
+#send-button:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+#chatroom::before {
+  display: none;
+}
+
+/* 表单样式 */
 #name-form {
   position: fixed;
   z-index: 3;
@@ -104,26 +493,63 @@ p:last-of-type {
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: white;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
 }
 
 #name-input {
-  position: fixed;
-  font-size: 200%;
-  top: calc(50% - 1em);
-  left: calc(50% - 8em);
-  width: 16em;
-  height: 2em;
+  font-size: 24px;
+  width: 400px;
+  max-width: 90%;
+  height: 60px;
   margin: 0;
   text-align: center;
-  border: 1px solid #bbb;
+  border: none;
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.15),
+    inset 0 1px 2px rgba(255, 255, 255, 0.8);
+  outline: none;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+#name-input:focus {
+  transform: scale(1.02);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.2),
+    inset 0 1px 2px rgba(255, 255, 255, 0.9);
 }
 
 #name-form p {
-  position: fixed;
-  top: calc(50% + 3em);
-  width: 100%;
+  margin-top: 40px;
+  max-width: 600px;
+  padding: 30px;
   text-align: center;
+  color: white;
+  font-size: 16px;
+  line-height: 1.8;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+#name-form p a {
+  color: white;
+  text-decoration: underline;
+  font-weight: 600;
 }
 
 #room-form {
@@ -133,47 +559,243 @@ p:last-of-type {
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: white;
-  font-size: 200%;
-  margin-top: calc(50vh - 3em);
-  text-align: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 20px;
+}
+
+#room-form p {
+  font-size: 20px;
+  color: white;
+  margin: 20px 0;
+  font-weight: 500;
 }
 
 #room-name {
-  font-size: inherit;
-  border: 1px solid #bbb;
-  height: 2em;
-  width: 16em;
-  padding-left: 1em;
+  font-size: 20px;
+  border: none;
+  height: 60px;
+  width: 400px;
+  max-width: 90%;
+  padding: 0 24px;
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.15),
+    inset 0 1px 2px rgba(255, 255, 255, 0.8);
+  outline: none;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+#room-name:focus {
+  transform: scale(1.02);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.2),
+    inset 0 1px 2px rgba(255, 255, 255, 0.9);
 }
 
 #room-form button {
-  font-size: inherit;
-  border: 1px solid #bbb;
-  background-color: #eee;
-  height: 2em;
+  font-size: 18px;
+  border: none;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  height: 60px;
+  padding: 0 32px;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+  transition: all 0.3s ease;
+  font-weight: 600;
+  font-family: inherit;
+  margin: 8px;
+}
+
+#room-form button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(102, 126, 234, 0.5);
+}
+
+#room-form button:active {
+  transform: translateY(0);
 }
 
 @media(max-width:660px) {
-  #name-input, #room-form { font-size: 150%; }
-  #name-form p { font-size: 75%; }
+  #name-input, #room-name { font-size: 18px; }
+  #name-form p { font-size: 14px; }
+  #room-form button { font-size: 16px; }
 }
+
 @media(max-width:500px) {
-  #name-input, #room-form { font-size: 100%; }
-  #name-form p { font-size: 50%; }
+  #name-input, #room-name { font-size: 16px; }
+  #name-form p { font-size: 12px; }
+  #room-form button { font-size: 14px; }
 }
 
 #go-public {
-  width: 4em;
-}
-#go-private {
-  width: 20em;
+  width: auto;
+  min-width: 120px;
 }
 
+#go-private {
+  width: auto;
+  min-width: 200px;
+}
+
+/* 主题切换按钮 */
+#theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 220px;
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+  border: none;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.1),
+    inset 0 1px 2px rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  font-size: 24px;
+  display: none !important;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 100;
+}
+
+#chatroom.active #theme-toggle {
+  display: flex !important;
+  animation: fadeInSlide 0.5s ease-out 0.1s backwards;
+}
+
+body.dark-mode #theme-toggle {
+  background: rgba(50, 50, 80, 0.3);
+  border: 1px solid rgba(100, 100, 200, 0.4);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    inset 0 1px 2px rgba(100, 100, 200, 0.3);
+}
+
+#theme-toggle:hover {
+  transform: scale(1.1) rotate(15deg);
+  box-shadow: 
+    0 6px 20px rgba(0, 0, 0, 0.15),
+    inset 0 1px 2px rgba(255, 255, 255, 0.6);
+}
+
+body.dark-mode #theme-toggle:hover {
+  box-shadow: 
+    0 6px 20px rgba(0, 0, 0, 0.4),
+    inset 0 1px 2px rgba(100, 100, 200, 0.4);
+}
+
+#theme-toggle:active {
+  transform: scale(0.95);
+}
+
+/* 房间标题 */
+#room-title {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 25px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.1),
+    inset 0 1px 2px rgba(255, 255, 255, 0.5);
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+  display: none;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+#chatroom.active #room-title {
+  display: flex !important;
+  animation: fadeInSlide 0.5s ease-out;
+}
+
+@keyframes fadeInSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+body.dark-mode #room-title {
+  background: rgba(50, 50, 80, 0.5);
+  border: 1px solid rgba(120, 120, 220, 0.5);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    inset 0 1px 2px rgba(120, 120, 220, 0.4);
+  color: #e8e8ff;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+#room-title .room-icon {
+  font-size: 12px;
+  font-weight: 700;
+  opacity: 1;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+}
+
+body.dark-mode #room-title .room-icon {
+  color: #d0d0ff;
+}
+
+#room-title #room-title-text {
+  color: rgb(255, 159, 28);
+}
+
+body.dark-mode #room-title #room-title-text {
+  color: #e8e8ff;
+}
+
+@media(max-width:600px) {
+  #theme-toggle {
+    right: 20px;
+    top: 80px;
+  }
+  #room-title {
+    font-size: 14px;
+    padding: 10px 18px;
+  }
+  #room-title .room-icon {
+    font-size: 11px;
+  }
+  #room-title #room-title-text {
+    font-size: 14px;
+  }
+}
 </style>
 
 <!--===================================================================================-->
-<!-- 实际的HTML内容，结构非常简单 -->
+<!-- 实际的HTML内容 -->
 
   </head>
   <body>
@@ -191,11 +813,24 @@ p:last-of-type {
       <button id="go-private">创建私人房间 &raquo;</button>
     </form>
     <form id="chatroom" action="/fake-form-action">
+      <div id="room-title">
+        <span class="room-icon"></span>
+        <span id="room-title-text"></span>
+      </div>
+      <button type="button" id="theme-toggle" title="切换主题">🌙</button>
+      <button type="button" id="roster-toggle" title="在线用户">
+        👥
+        <span class="user-count">0</span>
+      </button>
+      <div id="roster-overlay"></div>
       <div id="chatlog">
         <div id="spacer"></div>
       </div>
       <div id="roster"></div>
-      <input id="chat-input" placeholder="输入消息...">
+      <div id="chat-input-container">
+        <input id="chat-input" placeholder="输入消息...">
+        <button type="submit" id="send-button">→</button>
+      </div>
     </form>
   </body>
 
@@ -215,6 +850,14 @@ let chatroom = document.querySelector("#chatroom");
 let chatlog = document.querySelector("#chatlog");
 let chatInput = document.querySelector("#chat-input");
 let roster = document.querySelector("#roster");
+let sendButton = document.querySelector("#send-button");
+let themeToggle = document.querySelector("#theme-toggle");
+let roomTitle = document.querySelector("#room-title");
+let roomTitleText = document.querySelector("#room-title-text");
+let roomIcon = document.querySelector(".room-icon");
+let rosterToggle = document.querySelector("#roster-toggle");
+let rosterOverlay = document.querySelector("#roster-overlay");
+let userCount = document.querySelector(".user-count");
 
 // 聊天窗口是否滚动到底部？
 let isAtBottom = true;
@@ -226,6 +869,39 @@ let hostname = window.location.host;
 if (hostname == "") {
   // 可能是本地测试HTML文件
   hostname = "edge-chat-demo.cloudflareworkers.com";
+}
+
+// 主题切换功能
+let isDarkMode = localStorage.getItem('darkMode') === 'true';
+if (isDarkMode) {
+  document.body.classList.add('dark-mode');
+  themeToggle.textContent = '☀️';
+} else {
+  themeToggle.textContent = '🌙';
+}
+
+themeToggle.addEventListener('click', () => {
+  isDarkMode = !isDarkMode;
+  document.body.classList.toggle('dark-mode');
+  themeToggle.textContent = isDarkMode ? '☀️' : '🌙';
+  localStorage.setItem('darkMode', isDarkMode);
+});
+
+// 侧栏切换功能
+rosterToggle.addEventListener('click', () => {
+  roster.classList.add('active');
+  rosterOverlay.classList.add('active');
+});
+
+rosterOverlay.addEventListener('click', () => {
+  roster.classList.remove('active');
+  rosterOverlay.classList.remove('active');
+});
+
+// 更新在线用户数
+function updateUserCount() {
+  const count = roster.childElementCount;
+  userCount.textContent = count;
 }
 
 function startNameChooser() {
@@ -306,6 +982,20 @@ function startChat() {
     return;
   }
 
+  // 添加active类以显示房间标题和主题切换按钮
+  chatroom.classList.add('active');
+
+  // 设置房间标题
+  if (roomname.length == 64) {
+    // 私人房间
+    roomIcon.textContent = "🔒";
+    roomTitleText.textContent = username + " 的私人房间";
+  } else {
+    // 公共房间
+    roomIcon.textContent = "🏠";
+    roomTitleText.textContent = roomname+"号房间";
+  }
+
   document.location.hash = "#" + roomname;
 
   chatInput.addEventListener("keydown", event => {
@@ -327,12 +1017,15 @@ function startChat() {
   chatroom.addEventListener("submit", event => {
     event.preventDefault();
 
-    if (currentWebSocket) {
+    if (currentWebSocket && chatInput.value.trim()) {
       currentWebSocket.send(JSON.stringify({message: chatInput.value}));
       chatInput.value = "";
 
       // 发送消息时自动滚动到底部
-      chatlog.scrollBy(0, 1e8);
+      setTimeout(() => {
+        chatlog.scrollTop = chatlog.scrollHeight;
+        isAtBottom = true;
+      }, 0);
     }
   });
 
@@ -343,7 +1036,7 @@ function startChat() {
   });
 
   chatlog.addEventListener("scroll", event => {
-    isAtBottom = chatlog.scrollTop + chatlog.clientHeight >= chatlog.scrollHeight;
+    isAtBottom = chatlog.scrollTop + chatlog.clientHeight >= chatlog.scrollHeight - 10;
   });
 
   chatInput.focus();
@@ -358,7 +1051,9 @@ function startChat() {
   if('visualViewport' in window) {
     window.visualViewport.addEventListener('resize', function(event) {
       if (isAtBottom) {
-        chatlog.scrollBy(0, 1e8);
+        setTimeout(() => {
+          chatlog.scrollTop = chatlog.scrollHeight;
+        }, 100);
       }
     });
   }
@@ -385,6 +1080,7 @@ function join() {
       while (roster.firstChild) {
         roster.removeChild(roster.firstChild);
       }
+      updateUserCount();
 
       // 避免过快重连
       let timeSinceLastJoin = Date.now() - startTime;
@@ -414,6 +1110,7 @@ function join() {
       let p = document.createElement("p");
       p.innerText = data.joined;
       roster.appendChild(p);
+      updateUserCount();
     } else if (data.quit) {
       for (let child of roster.childNodes) {
         if (child.innerText == data.quit) {
@@ -421,30 +1118,10 @@ function join() {
           break;
         }
       }
+      updateUserCount();
     } else if (data.ready) {
       // 所有加入前的消息都已传送完毕
-      if (!wroteWelcomeMessages) {
-        wroteWelcomeMessages = true;
-        addChatMessage(null,
-            "* 这是一个网页聊天室，无需注册即可畅聊。" +
-                       //这是一个使用Cloudflare Workers Durable Objects构建的演示应用。
-            "");
-        //源代码可以在以下地址找到: https://github.com/cloudflare/workers-chat-demo
-        addChatMessage(null,
-            "* 提示: 聊天室参与者是互联网上的匿名用户，" +
-                       //警告: 聊天室参与者是互联网上的随机用户。
-            "名称未经认证，任何人都可以使用相同名称，请仔细甄别信息；" +
-                       //名称未经认证；任何人都可以冒充他人。与你聊天的人
-            "请勿随意相信陌生人的链接或与陌生人交易");
-        //并非Cloudflare员工。聊天记录会被保存。
-        if (roomname.length == 64) {
-          addChatMessage(null,
-              "* 这是一个私人房间。你可以通过分享URL邀请他人加入。");
-        } else {
-          addChatMessage(null,
-              "* 欢迎来到 #" + roomname + " 房间！打个招呼吧！");
-        }
-      }
+      wroteWelcomeMessages = true;
     } else {
       // 常规聊天消息
       if (data.timestamp > lastSeenTimestamp) {
@@ -478,7 +1155,10 @@ function addChatMessage(name, text) {
   // 则保持底部位置，否则不改变滚动位置
   chatlog.appendChild(p);
   if (isAtBottom) {
-    chatlog.scrollBy(0, 1e8);
+    // 使用 setTimeout 确保 DOM 更新后再滚动
+    setTimeout(() => {
+      chatlog.scrollTop = chatlog.scrollHeight;
+    }, 0);
   }
 }
 
